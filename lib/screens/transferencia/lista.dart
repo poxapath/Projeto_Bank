@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'formulario.dart';
 import '../../models/transferencia.dart';
+import '../../database/transferencia_dao.dart';
+import '../contato/lista.dart';
 
 class ListaTransferencias extends StatefulWidget {
-  final List<Transferencia> _transferencias = [];
   @override
   State<StatefulWidget> createState() {
     return ListaTranferenciaState();
@@ -12,6 +13,20 @@ class ListaTransferencias extends StatefulWidget {
 
 class ListaTranferenciaState extends State<ListaTransferencias> {
   static const _tituloAppBar = 'Transferência';
+  List<Transferencia> _transferencias = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _carregarTransferencias();
+  }
+
+  Future<void> _carregarTransferencias() async {
+    final lista = await TransferenciaDao.listar();
+    setState(() {
+      _transferencias = lista;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,57 +40,60 @@ class ListaTranferenciaState extends State<ListaTransferencias> {
             fontWeight: FontWeight.bold,
           ),
         ),
-
         backgroundColor: const Color.fromRGBO(33, 150, 243, 1),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.people, color: Colors.white),
+            tooltip: 'Contatos',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => ListaContatos()),
+                //ScaffoldMessenger.of(context).showSnackBar(
+                //SnackBar(content: Text('Lista de contatos em breve!')),
+              );
+            },
+          ),
+        ],
       ),
-
       body: ListView.builder(
-        itemCount: widget._transferencias.length,
+        itemCount: _transferencias.length,
         itemBuilder: (context, indice) {
-          final transferencia = widget._transferencias[indice];
+          final transferencia = _transferencias[indice];
           return ItemTransferencia(transferencia);
         },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          print("Botão + Pressionado!");
-
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) {
-                return FormularioTransferencia();
-              },
-            ),
-          ).then((transferenciaRecebida) => _atualiza(transferenciaRecebida));
+            MaterialPageRoute(builder: (context) => FormularioTransferencia()),
+          ).then((_) => _carregarTransferencias());
         },
         child: Icon(Icons.add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
-
-  void _atualiza(Transferencia? transferenciaRecebida) {
-    if (transferenciaRecebida != null) {
-      setState(() {
-        widget._transferencias.add(transferenciaRecebida);
-      });
-    }
-  }
 }
 
 class ItemTransferencia extends StatelessWidget {
   final Transferencia _transferencia;
-
   ItemTransferencia(this._transferencia);
 
   @override
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        leading: Icon(Icons.monetization_on),
-        title: Text(_transferencia.valor.toString()),
-        subtitle: Text(_transferencia.numeroConta.toString()),
+        leading: CircleAvatar(
+          backgroundColor: Colors.blue,
+          child: Icon(Icons.monetization_on, color: Colors.white),
+        ),
+        title: Text(
+          'R\$ ${_transferencia.valor.toStringAsFixed(2)}',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        subtitle: Text('Conta: ${_transferencia.numeroConta}'),
       ),
     );
   }

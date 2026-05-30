@@ -1,90 +1,69 @@
 import 'package:flutter/material.dart';
 import '../../components/editor.dart';
 import '../../models/transferencia.dart';
+import '../../database/transferencia_dao.dart';
 
 class FormularioTransferencia extends StatefulWidget {
-  final TextEditingController _controladorCampoNumeroConta =
-      TextEditingController();
-  final TextEditingController _controladorCampoValor = TextEditingController();
+  final int? numeroConta;
+
+  FormularioTransferencia({this.numeroConta});
 
   @override
-  State<StatefulWidget> createState() {
-    return FormularioTransferenciaState();
-  }
+  State<StatefulWidget> createState() => FormularioTransferenciaState();
 }
 
 class FormularioTransferenciaState extends State<FormularioTransferencia> {
-  
-  static const _tituloAppBar = 'Criando Transferência';
-  static const _rotuloCampoValor = 'Valor';
-  static const _dicaCampoValor = '0.00';
+  final _controladorCampoNumeroConta = TextEditingController();
+  final _controladorCampoValor = TextEditingController();
 
-  static const _rotuloCampoNumeroConta = 'Número Conta';
-  static const _dicaCampoNumeroConta = '0000';
-  static const _textBotaoConfirmar = 'Confirmar';
+  @override
+  void initState() {
+    super.initState();
+    if (widget.numeroConta != null) {
+      _controladorCampoNumeroConta.text = widget.numeroConta.toString();
+    }
+  }
 
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          _tituloAppBar,
-          // style: TextStyle(
-          //   color: Colors.white70,
-          //   fontSize: 20,
-          //   fontWeight: FontWeight.bold,
-          // ),
-        ),
-        //backgroundColor: const Color.fromRGBO(33, 150, 243, 1),
-      ),
-
+      appBar: AppBar(title: Text('Criando Transferência')),
       body: SingleChildScrollView(
         child: Column(
-          children: <Widget>[
+          children: [
             Editor(
-              controlador: widget._controladorCampoNumeroConta,
-              rotulo: _rotuloCampoNumeroConta,
-              dica: _dicaCampoNumeroConta,
+              controlador: _controladorCampoNumeroConta,
+              rotulo: 'Número Conta',
+              dica: '0000',
             ),
-
             Editor(
-              controlador: widget._controladorCampoValor,
-              rotulo: _rotuloCampoValor,
-              dica: _dicaCampoValor,
+              controlador: _controladorCampoValor,
+              rotulo: 'Valor',
+              dica: '0.00',
               icone: Icons.monetization_on,
             ),
-
             ElevatedButton(
-              child: Text(_textBotaoConfirmar),
-              onPressed: () {
-                debugPrint("Clicou no Confirmar!");
-                _criaTransferencia(
-                  context,
-                  widget._controladorCampoNumeroConta,
-                  widget._controladorCampoValor,
-                );
-              },
+              child: Text('Confirmar'),
+              onPressed: () => _confirmar(context),
             ),
           ],
         ),
       ),
     );
   }
-}
 
-void _criaTransferencia(
-  BuildContext context,
-  TextEditingController controladorCampoNumeroConta,
-  TextEditingController controladorCampoValor,
-) {
-  final int? numeroConta = int.parse(controladorCampoNumeroConta.text);
-  final double? valor = double.parse(controladorCampoValor.text);
+  Future<void> _confirmar(BuildContext context) async {
+    final int? numeroConta = int.tryParse(_controladorCampoNumeroConta.text);
+    final double? valor = double.tryParse(_controladorCampoValor.text);
 
-  if (numeroConta != null && valor != null) {
-    final transferenciaCriada = Transferencia(valor, numeroConta);
-    debugPrint("Criando Transferência...");
-    debugPrint("$transferenciaCriada");
-    Navigator.pop(context, transferenciaCriada);
+    if (numeroConta != null && valor != null) {
+      final transferencia = Transferencia(valor, numeroConta);
+      await TransferenciaDao.inserir(transferencia);
+      Navigator.pop(context);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Preencha todos os campos corretamente!')),
+      );
+    }
   }
 }
