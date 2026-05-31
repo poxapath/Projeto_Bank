@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/contato.dart';
+import '../../database/contato_dao.dart';
 
 class FormularioContato extends StatefulWidget {
   @override
@@ -13,39 +14,40 @@ class _FormularioContatoState extends State<FormularioContato> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Novo Contato')),
+      appBar: AppBar(title: const Text('Novo Contato')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             TextField(
               controller: _controladorNome,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Nome',
-                hintText: 'Ex: João Silva',
+                hintText: 'Ex: Maria Oliveira',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.person),
               ),
+              keyboardType: TextInputType.text,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextField(
               controller: _controladorConta,
-              decoration: InputDecoration(
-                labelText: 'Número da Conta',
-                hintText: 'Ex: 12345',
+              decoration: const InputDecoration(
+                labelText: 'Número da conta',
+                hintText: '0000',
                 border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.account_balance),
+                prefixIcon: Icon(Icons.numbers),
               ),
               keyboardType: TextInputType.number,
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () => _confirmar(context),
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Text('Salvar Contato', style: TextStyle(fontSize: 16)),
+                onPressed: () => _salvar(context),
+                child: const Padding(
+                  padding: EdgeInsets.all(12),
+                  child: Text('Salvar', style: TextStyle(fontSize: 16)),
                 ),
               ),
             ),
@@ -55,16 +57,34 @@ class _FormularioContatoState extends State<FormularioContato> {
     );
   }
 
-  void _confirmar(BuildContext context) {
-    final nome = _controladorNome.text.trim();
-    final int? numeroConta = int.tryParse(_controladorConta.text);
+  void _salvar(BuildContext context) async {
+    final String nome = _controladorNome.text.trim();
+    final int? conta = int.tryParse(_controladorConta.text);
 
-    if (nome.isNotEmpty && numeroConta != null) {
-      final contato = Contato(nome, numeroConta);
-      Navigator.pop(context, contato);
+    if (nome.isNotEmpty && conta != null) {
+      final contatoCriado = Contato(nome, conta);
+
+      try {
+        // Salva no banco e obtém o id gerado
+        final idGerado = await ContatoDao.inserir(contatoCriado);
+        debugPrint(
+          'Contato salvo: id:$idGerado | nome:${contatoCriado.nome}, conta:${contatoCriado.numeroConta}',
+        );
+
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Contato salvo com sucesso!')),
+          );
+          Navigator.pop(context);
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Erro ao salvar: $e')));
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Preencha todos os campos corretamente!')),
+        const SnackBar(content: Text('Preencha todos os campos corretamente.')),
       );
     }
   }

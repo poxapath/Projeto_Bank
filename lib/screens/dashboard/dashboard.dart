@@ -20,6 +20,13 @@ class Dashboard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Image.asset(
+                      'images/bytebank_logo.png',
+                      width: double.infinity,
+                      height: 200,
+                      fit: BoxFit.contain,
+                    ),
+                    SizedBox(height: 16),
                     _CardSaldo(),
                     SizedBox(height: 24),
                     Text(
@@ -51,9 +58,7 @@ class Dashboard extends StatelessWidget {
                           cor: Colors.green,
                           onTap: () => Navigator.push(
                             context,
-                            MaterialPageRoute(
-                              builder: (_) => ListaContatos(),
-                            ),
+                            MaterialPageRoute(builder: (_) => ListaContatos()),
                           ),
                         ),
                       ],
@@ -116,8 +121,10 @@ class _CardSaldo extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Saldo disponível',
-              style: TextStyle(color: Colors.white70, fontSize: 14)),
+          Text(
+            'Saldo disponível',
+            style: TextStyle(color: Colors.white70, fontSize: 14),
+          ),
           SizedBox(height: 8),
           Text(
             'R\$ 2.500,00',
@@ -128,8 +135,10 @@ class _CardSaldo extends StatelessWidget {
             ),
           ),
           SizedBox(height: 8),
-          Text('Conta: 12345-6',
-              style: TextStyle(color: Colors.white70, fontSize: 12)),
+          Text(
+            'Conta: 12345-6',
+            style: TextStyle(color: Colors.white70, fontSize: 12),
+          ),
         ],
       ),
     );
@@ -165,9 +174,10 @@ class _BotaoAcao extends StatelessWidget {
             children: [
               Icon(icone, color: cor, size: 36),
               SizedBox(height: 8),
-              Text(label,
-                  style:
-                      TextStyle(color: cor, fontWeight: FontWeight.bold)),
+              Text(
+                label,
+                style: TextStyle(color: cor, fontWeight: FontWeight.bold),
+              ),
             ],
           ),
         ),
@@ -215,12 +225,14 @@ class _CardResumo extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 14)),
-              Text(valor,
-                  style: TextStyle(
-                      color: Colors.grey.shade600, fontSize: 12)),
+              Text(
+                label,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              ),
+              Text(
+                valor,
+                style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+              ),
             ],
           ),
         ],

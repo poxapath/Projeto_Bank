@@ -1,16 +1,45 @@
-# bank
+# 🏦 Bank App — Persistência de Dados com SQLite
 
-A new Flutter project.
+Aplicativo desenvolvido em **Flutter** com persistência de dados local via **SQLite**, simulando funcionalidades básicas de um banco digital.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## 📱 Funcionalidades
 
-A few resources to get you started if this is your first Flutter project:
+- Dashboard com saldo e navegação rápida
+- Cadastro e listagem de transferências (formatação R$)
+- Cadastro e listagem de contatos
+- Navegação integrada entre contatos e transferências
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+---
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## ▶️ Como executar
+
+**Pré-requisitos:** Flutter SDK, Git e Google Chrome instalados.
+
+```bash
+# 1. Clone o repositório
+git clone https://github.com/poxapath/Projeto_Bank.git
+cd Projeto_Bank
+
+# 2. Instale as dependências
+flutter pub get
+
+# 3. Configure o SQLite para web (necessário apenas uma vez)
+dart run sqflite_common_ffi_web:setup
+
+# 4. Execute no Chrome
+flutter run -d chrome
+```
+
+---
+
+## 🛠️ Tecnologias
+
+Flutter • Dart • SQLite (sqflite) • intl (formatação pt_BR)
+
+---
+
+## 📌 Observação
+
+Ao rodar no Chrome, os dados são salvos no IndexedDB do navegador. Em dispositivos Android, são salvos diretamente via SQLite.
